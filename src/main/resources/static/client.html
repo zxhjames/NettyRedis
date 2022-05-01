@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    var webSocket;
+    if (window.WebSocket) {
+        webSocket = new WebSocket("ws://localhost:8089/ws");
+
+        webSocket.onmessage = function (ev) {
+            console.log("=====");
+            var res = document.getElementById("response");
+            res.value = res.value + "\n" + ev.data;
+        }
+
+        webSocket.onopen = function (ev) {
+            var req = document.getElementById("response");
+            req.value = "链接开启...."+"\n";
+        }
+
+        webSocket.onclose = function (ev) {
+            var req = document.getElementById("response");
+            req.value += "链接关闭...."+"\n";
+        }
+
+        function sendMessage(msg) {
+            //alert("send?");
+            if (!window.WebSocket){
+                return;
+            }
+            if (webSocket.readyState === WebSocket.OPEN) {
+                //alert("send!");
+                webSocket.send(msg);
+                document.getElementById("requestComment").value='';
+            }else {
+                alert("链接未开启！");
+            }
+        }
+
+    } else {
+        alert("浏览器不支持websocket")
+    }
+</script>
+<form οnsubmit="false">
+    <textarea style="height: 300px;width: 300px" id="requestComment" name="reqestcom"></textarea>
+    <button type="button" οnclick="sendMessage(this.form.reqestcom.value)">发送</button>
+    <textarea style="height: 300px;width: 300px" id="response"></textarea>
+    <button type="button" οnclick="document.getElementById('response').value=''">清空</button>
+</form>
+</body>
+</html>
